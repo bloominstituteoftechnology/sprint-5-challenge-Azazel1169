@@ -25,94 +25,90 @@ async function sprintChallenge5() { // Note the async keyword, in case you wish 
     }
   }
 
-  async function renderLearnerNames() {
-    try {
-      const learnersData = await fetchLearnersData();
-      const mentorsData = await fetchMentorsData();
-      console.log(learnersData);
-      console.log(mentorsData);
+  
+    
+  const learnersData = await fetchLearnersData();
+  const mentorsData = await fetchMentorsData();
+
+  const learners = learnersData.map(learner => {
+   
+    return {
+      ...learner, 
+      mentors: learner.mentors.map(mentorId => {
+        return mentorsData.find(mentor =>  mentor.id === mentorId)
+      })
+    }
+  })
+  
       const container = document.querySelector('.cards')
       container.innerHTML = '';
   
       let selectedCard = null;
+    
+  learners.forEach(learner => {
+    console.log(learner);  
+    const card = document.createElement('div');
+    card.classList.add('card');
   
-      for (let i = 0; i < learnersData.length; i++) {
-        const learner = learnersData[i];
-        const mentors = mentorsData.find(m => m.id === learner.mentorsId);
-       
-       
+    const nameElement = document.createElement('h3');
+    nameElement.textContent = `${learner.fullName}`;
+    card.appendChild(nameElement)
   
-        const card = document.createElement('div');
-        card.classList.add('card');
+    const emailElement = document.createElement('div');
+    emailElement.textContent = learner.email;
+    card.appendChild(emailElement)
   
-        const nameElement = document.createElement('h3');
-        nameElement.textContent = `${learner.fullName}`;
-        card.appendChild(nameElement)
+    const mentorsTitle = document.createElement('h4');
+    mentorsTitle.textContent = 'Mentors';
+    card.appendChild(mentorsTitle)
   
-        const emailElement = document.createElement('div');
-        emailElement.textContent = learner.email;
-        card.appendChild(emailElement)
+    const mentorsList = document.createElement('ul');
+    card.appendChild(mentorsList)
   
-        const mentorsTitle = document.createElement('h4');
-        mentorsTitle.textContent = 'Mentors';
-        card.appendChild(mentorsTitle)
+    if (learner.mentors) {
+      const mentorElement = document.createElement('li');
+      mentorElement.textContent = `Mentor: ${learner.mentors.firstName} ${learner.mentors.lastName}`;
+      mentorsList.appendChild(mentorElement);
+    }
   
-        const mentorsList = document.createElement('ul');
-        card.appendChild(mentorsList)
+    container.appendChild(card);
   
-        if (mentors) {
-          const mentorElement = document.createElement('li');
-          mentorElement.textContent = `Mentor: ${mentors.firstName} ${mentors.lastName}`;
-          mentorsList.appendChild(mentorElement);
-        }
-  
-        container.appendChild(card);
-  
-        // Add event listener for card selection
-        card.addEventListener('click', () => {
-          if (selectedCard !== null && selectedCard !== card) {
-            selectedCard.classList.remove('selected');
-          }
-          card.classList.toggle('selected');
-          selectedCard = card; 
-  
-          const infoElement = document.querySelector('.info');
-          if (card.classList.contains('selected')) {
-            infoElement.textContent = `The selected learner is ${learner.fullName}`;
-          } else {
-            infoElement.textContent = "No learner is selected";
-            selectedCard = null; 
-          }
-        });
+    // Add event listener for card selection
+    card.addEventListener('click', () => {
+      if (selectedCard !== null && selectedCard !== card) {
+        selectedCard.classList.remove('selected');
       }
-  
-      
-      const mentorsLists = document.querySelectorAll('.card ul');
-      mentorsLists.forEach(mentorsList => {
-        mentorsList.style.display = 'none';
-      });
+      card.classList.toggle('selected');
+      selectedCard = card;
   
       const infoElement = document.querySelector('.info');
-      infoElement.textContent = "No learner is selected";
-    } catch (error) {
-      console.error('Error rendering learner names: ', error.message);
-    }
-  }
+      if (card.classList.contains('selected')) {
+        infoElement.textContent = `The selected learner is ${learner.fullName}`;
+      } else {
+        infoElement.textContent = "No learner is selected";
+        selectedCard = null;
+      }
+    });
+    })
+      
+    const mentorsLists = document.querySelectorAll('.card ul');
+    mentorsLists.forEach(mentorsList => {
+      mentorsList.style.display = 'none';
+    });
   
-  renderLearnerNames()
-
- 
- 
+    const infoElement = document.querySelector('.info');
+  infoElement.textContent = "No learner is selected";
   
     const footer = document.querySelector('footer')
     const currentYear = new Date().getFullYear()
     footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear - 1}`
+  }
   
 
   
 
   // 👆 WORK WORK ABOVE THIS LINE 👆
-}
+
 
 // ❗ DO NOT CHANGE THE CODE  BELOW
 if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
