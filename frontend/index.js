@@ -60,15 +60,18 @@ async function sprintChallenge5() { // Note the async keyword, in case you wish 
   
     const mentorsTitle = document.createElement('h4');
     mentorsTitle.textContent = 'Mentors';
+    mentorsTitle.classList.add('closed')
     card.appendChild(mentorsTitle)
   
     const mentorsList = document.createElement('ul');
     card.appendChild(mentorsList)
   
-    if (learner.mentors) {
-      const mentorElement = document.createElement('li');
-      mentorElement.textContent = `Mentor: ${learner.mentors.firstName} ${learner.mentors.lastName}`;
-      mentorsList.appendChild(mentorElement);
+    if (learner.mentors.length > 0) {
+      learner.mentors.forEach(mentor => {
+        const mentorElement = document.createElement('li');
+        mentorElement.textContent = `${mentor.firstName} ${mentor.lastName}`;
+        mentorsList.appendChild(mentorElement);
+      });
     }
   
     container.appendChild(card);
@@ -89,12 +92,38 @@ async function sprintChallenge5() { // Note the async keyword, in case you wish 
         selectedCard = null;
       }
     });
+
+    
+
+// Add the event listener
+mentorsTitle.addEventListener('click', function() {
+  // Clear the mentors list
+  mentorsList.innerHTML = '';
+
+  // Add each mentor to the list
+  if (learner.mentors.length > 0) {
+    learner.mentors.forEach(mentor => {
+      const mentorItem = document.createElement('li');
+      mentorItem.textContent = `${mentor.firstName} ${mentor.lastName}`;
+      mentorsList.appendChild(mentorItem);
+    });
+  } else {
+    const noMentorItem = document.createElement('li');
+    noMentorItem.textContent = "No mentors assigned";
+    mentorsList.appendChild(noMentorItem);
+  }
+
+  // Toggle the display of the mentors list
+  mentorsList.style.display = (mentorsList.style.display === 'none') ? 'block' : 'none';
+});
+
+
     })
-      
     const mentorsLists = document.querySelectorAll('.card ul');
     mentorsLists.forEach(mentorsList => {
       mentorsList.style.display = 'none';
     });
+      
   
     const infoElement = document.querySelector('.info');
   infoElement.textContent = "No learner is selected";
